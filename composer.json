@@ -8,15 +8,6 @@
 		}
 	},
 	"require": {
-		"php": ">=5.6"
-	},
-	"keywords": [
-		"phalcon"
-	],
-	"authors": [
-		{
-			"name": "Óscar Enríquez",
-			"homepage": "http://oscar.xyz"
-		}
-	]
+		"php": ">=7.1"
+	}
 }
