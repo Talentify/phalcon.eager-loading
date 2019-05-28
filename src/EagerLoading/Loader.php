@@ -174,7 +174,7 @@ final class Loader
     /**
      * @return null|ModelInterface[]
      */
-    public function getSubject() : ?ModelInterface
+    public function getSubject() : ?array
     {
         return $this->subject;
     }
