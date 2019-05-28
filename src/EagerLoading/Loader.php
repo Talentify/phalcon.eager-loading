@@ -140,7 +140,7 @@ final class Loader
      * @param mixed            ...$arguments
      * @return ModelInterface[]
      */
-    static public function fromArray(array $subject, ...$arguments) : array
+    static public function fromArray(array $subject, ...$arguments)
     {
         return (new static($subject, ...$arguments))->execute()->get();
     }
@@ -150,9 +150,9 @@ final class Loader
      *
      * @param Simple $subject
      * @param mixed  ...$arguments
-     * @return Simple
+     * @return Simple[]
      */
-    static public function fromResultset(Simple $subject, ...$arguments) : Simple
+    static public function fromResultset(Simple $subject, ...$arguments)
     {
         return (new static($subject, ...$arguments))->execute()->get();
     }
