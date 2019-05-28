@@ -1,110 +1,118 @@
 <?php namespace Sb\Framework\Mvc\Model;
 
+use Phalcon\Mvc\Model\ResultsetInterface;
+use Phalcon\Mvc\ModelInterface;
 use Sb\Framework\Mvc\Model\EagerLoading\Loader;
 
-trait EagerLoadingTrait {
+trait EagerLoadingTrait
+{
 
-	/**
-	 * <code>
-	 * <?php
-	 *
-	 * $limit  = 100;
-	 * $offset = max(0, $this->request->getQuery('page', 'int') - 1) * $limit;
-	 *
-	 * $manufacturers = Manufacturer::with('Robots.Parts', [
-	 *     'limit' => [$limit, $offset]
-	 * ]);	
-	 *
-	 * foreach ($manufacturers as $manufacturer) {
-	 *     foreach ($manufacturer->robots as $robot) {
-	 *	       foreach ($robot->parts as $part) { ... }
-	 *     }
-	 * }
-	 *
-	 * </code>
-	 *
-	 * @param mixed ...$arguments
-	 * @return Phalcon\Mvc\ModelInterface[]
-	 */
-	static public function with(...$arguments) {
-		if (! empty ($arguments)) {
-			$numArgs    = count($arguments);
-			$lastArg    = $numArgs - 1;
-			$parameters = NULL;
+    /**
+     * <code>
+     * <?php
+     *
+     * $limit  = 100;
+     * $offset = max(0, $this->request->getQuery('page', 'int') - 1) * $limit;
+     *
+     * $manufacturers = Manufacturer::with('Robots.Parts', [
+     *     'limit' => [$limit, $offset]
+     * ]);
+     *
+     * foreach ($manufacturers as $manufacturer) {
+     *     foreach ($manufacturer->robots as $robot) {
+     *           foreach ($robot->parts as $part) { ... }
+     *     }
+     * }
+     *
+     * </code>
+     *
+     * @param mixed ...$arguments
+     * @return \Phalcon\Mvc\Model\ResultsetInterface
+     * @throws \BadMethodCallException
+     * @throws \LogicException
+     */
+    static public function with(...$arguments) : ResultsetInterface
+    {
+        if (!empty ($arguments)) {
+            $numArgs    = count($arguments);
+            $lastArg    = $numArgs - 1;
+            $parameters = null;
 
-			if ($numArgs >= 2 && is_array($arguments[$lastArg])) {
-				$parameters = $arguments[$lastArg];
-				
-				unset ($arguments[$lastArg]);
+            if ($numArgs >= 2 && is_array($arguments[$lastArg])) {
+                $parameters = $arguments[$lastArg];
 
-				if (isset ($parameters['columns'])) {
-					throw new \LogicException('Results from database must be full models, do not use `columns` key');
-				}
-			}
-		}
-		else {
-			throw new \BadMethodCallException(sprintf('%s requires at least one argument', __METHOD__));
-		}
+                unset ($arguments[$lastArg]);
 
-		$ret = static::find($parameters);
+                if (isset ($parameters['columns'])) {
+                    throw new \LogicException('Results from database must be full models, do not use `columns` key');
+                }
+            }
+        } else {
+            throw new \BadMethodCallException(sprintf('%s requires at least one argument', __METHOD__));
+        }
 
-		if ($ret->count()) {
-			$ret = Loader::fromResultset($ret, ...$arguments);
-		}
+        $ret = static::find($parameters);
 
-		return $ret;
-	}
+        if ($ret->count()) {
+            $ret = Loader::fromResultset($ret, ...$arguments);
+        }
 
-	/**
-	 * Same as EagerLoadingTrait::with() for a single record
-	 *
-	 * @param mixed ...$arguments
-	 * @return false|Phalcon\Mvc\ModelInterface
-	 */
-	static public function findFirstWith(...$arguments) {
-		if (! empty ($arguments)) {
-			$numArgs    = count($arguments);
-			$lastArg    = $numArgs - 1;
-			$parameters = NULL;
+        return $ret;
+    }
 
-			if ($numArgs >= 2 && is_array($arguments[$lastArg])) {
-				$parameters = $arguments[$lastArg];
-				
-				unset ($arguments[$lastArg]);
+    /**
+     * Same as EagerLoadingTrait::with() for a single record
+     *
+     * @param mixed ...$arguments
+     * @return false|\Phalcon\Mvc\ModelInterface
+     * @throws \BadMethodCallException
+     * @throws \LogicException
+     */
+    static public function findFirstWith(...$arguments)
+    {
+        if (!empty ($arguments)) {
+            $numArgs    = count($arguments);
+            $lastArg    = $numArgs - 1;
+            $parameters = null;
 
-				if (isset ($parameters['columns'])) {
-					throw new \LogicException('Results from database must be full models, do not use `columns` key');
-				}
-			}
-		}
-		else {
-			throw new \BadMethodCallException(sprintf('%s requires at least one argument', __METHOD__));
-		}
+            if ($numArgs >= 2 && is_array($arguments[$lastArg])) {
+                $parameters = $arguments[$lastArg];
 
-		if ($ret = static::findFirst($parameters)) {
-			$ret = Loader::fromModel($ret, ...$arguments);
-		}
+                unset ($arguments[$lastArg]);
 
-		return $ret;
-	}
+                if (isset ($parameters['columns'])) {
+                    throw new \LogicException('Results from database must be full models, do not use `columns` key');
+                }
+            }
+        } else {
+            throw new \BadMethodCallException(sprintf('%s requires at least one argument', __METHOD__));
+        }
 
-	/**
-	 * <code>
-	 * <?php
-	 *
-	 * $manufacturer = Manufacturer::findFirstById(51);
-	 *
-	 * $manufacturer->load('Robots.Parts');	
-	 *
-	 * foreach ($manufacturer->robots as $robot) {
-	 *    foreach ($robot->parts as $part) { ... }
-	 * }
-	 * </code>
-	 *
-	 * @param mixed ...$arguments
-	 * @return self
-	 */
-	public function load(...$arguments) {
-		return Loader::fromModel($this, ...$arguments);
-	}
+        if ($ret = static::findFirst($parameters)) {
+            $ret = Loader::fromModel($ret, ...$arguments);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * <code>
+     * <?php
+     *
+     * $manufacturer = Manufacturer::findFirstById(51);
+     *
+     * $manufacturer->load('Robots.Parts');
+     *
+     * foreach ($manufacturer->robots as $robot) {
+     *    foreach ($robot->parts as $part) { ... }
+     * }
+     * </code>
+     *
+     * @param mixed ...$arguments
+     * @return static
+     */
+    public function load(...$arguments) : ModelInterface
+    {
+        return Loader::fromModel($this, ...$arguments);
+    }
 }
