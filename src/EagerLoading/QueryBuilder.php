@@ -13,7 +13,7 @@ final class QueryBuilder extends Builder {
 		throw new \LogicException(static::E_NOT_ALLOWED_METHOD_CALL);
 	}
 
-	public function columns($columns) {
+	public function columns($columns) : \Phalcon\Mvc\Model\Query\BuilderInterface {
 		throw new \LogicException(static::E_NOT_ALLOWED_METHOD_CALL);
 	}
 
